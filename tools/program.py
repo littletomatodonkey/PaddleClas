@@ -442,17 +442,19 @@ def run(dataloader,
             global total_step
             logger.scaler('loss', metrics[0][0], total_step, vdl_writer)
             total_step += 1
-        if mode == 'eval':
-            logger.info("{:s} step:{:<4d} {:s}s".format(mode, idx, fetchs_str))
-        else:
-            epoch_str = "epoch:{:<3d}".format(epoch)
-            step_str = "{:s} step:{:<4d}".format(mode, idx)
+        if idx % 10 == 0:
+            if mode == 'eval':
+                logger.info("{:s} step:{:<4d} {:s}s".format(mode, idx,
+                                                            fetchs_str))
+            else:
+                epoch_str = "epoch:{:<3d}".format(epoch)
+                step_str = "{:s} step:{:<4d}".format(mode, idx)
 
-            logger.info("{:s} {:s} {:s}".format(
-                logger.coloring(epoch_str, "HEADER")
-                if idx == 0 else epoch_str,
-                logger.coloring(step_str, "PURPLE"),
-                logger.coloring(fetchs_str, 'OKGREEN')))
+                logger.info("{:s} {:s} {:s}".format(
+                    logger.coloring(epoch_str, "HEADER")
+                    if idx == 0 else epoch_str,
+                    logger.coloring(step_str, "PURPLE"),
+                    logger.coloring(fetchs_str, 'OKGREEN')))
 
     end_str = ''.join([str(m.mean) + ' '
                        for m in metric_list] + [batch_time.total]) + 's'

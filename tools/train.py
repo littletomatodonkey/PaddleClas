@@ -91,12 +91,12 @@ def main(args):
     # load model from 1. checkpoint to resume training, 2. pretrained model to finetune
     init_model(config, train_prog, exe)
 
-    train_reader = Reader(config, 'train')()
-    train_dataloader.set_sample_list_generator(train_reader, place)
+    train_reader = Reader(config, 'train')
+    train_dataloader.set_sample_list_generator(train_reader(), place)
 
     if config.validate:
-        valid_reader = Reader(config, 'valid')()
-        valid_dataloader.set_sample_list_generator(valid_reader, place)
+        valid_reader = Reader(config, 'valid')
+        valid_dataloader.set_sample_list_generator(valid_reader(), place)
         compiled_valid_prog = program.compile(config, valid_prog)
 
     compiled_train_prog = fleet.main_program
@@ -109,6 +109,7 @@ def main(args):
 
     for epoch_id in range(config.epochs):
         # 1. train with train dataset
+        train_reader.set_random_seed(epoch_id)
         program.run(train_dataloader, exe, compiled_train_prog, train_fetchs,
                     epoch_id, 'train', vdl_writer)
         if int(os.getenv("PADDLE_TRAINER_ID", 0)) == 0:

@@ -257,13 +257,17 @@ class Reader:
             raise ModeException(mode=mode)
 
         self.use_gpu = config.get("use_gpu", True)
-        use_mix = config.get('use_mix')
         self.params['mode'] = mode
         if seed is not None:
             self.params['shuffle_seed'] = seed
+
+        use_mix = config.get('use_mix')
         self.batch_ops = []
         if use_mix and mode == "train":
             self.batch_ops = create_operators(self.params['mix'])
+
+    def set_random_seed(self, seed):
+        self.params['shuffle_seed'] = seed
 
     def __call__(self):
         device_num = trainers_num
